@@ -1,0 +1,22 @@
+
+.navbar-div {
+  @apply h-full flex flex-row items-center justify-between;
+  width: 100vw;
+
+  .chat-logo {
+    @apply px-4;
+
+    .svg-icon {
+      fill: #128c7e;
+    }
+  }
+
+  ul {
+    @apply px-10 gap-14 flex flex-row items-center;
+
+    li {
+      @apply cursor-pointer hover:text-emerald-700;
+    }
+  }
+}
+
