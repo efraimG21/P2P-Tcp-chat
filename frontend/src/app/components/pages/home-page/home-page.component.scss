@@ -1,0 +1,11 @@
+
+.home-page {
+  @apply h-full w-full flex flex-row justify-center items-center text-amber-50;
+  background: #2a3942;
+
+  .start-chat-button {
+    @apply px-5 py-3 hover:bg-green-950;
+    border-radius: 10rem;
+    background: #218c29;
+  }
+}

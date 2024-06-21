@@ -1,1 +1,43 @@
-<p>sign-on-page works!</p>
+<section class="sign-on-page">
+  <div class="sign-on-form">
+    <form (ngSubmit)="onSubmit()" [formGroup]="userForm" class="user-form">
+      <div class="input-rapper">
+        <label [for]="userName" class="input-label">Username:</label>
+        <input [formControl]="userName" [maxLength]="10" [minLength]="5" placeholder="User name." type="text">
+        @if (userName.value.length !== 0 && userName.invalid) {
+          <p class="text-red-700">invalid</p>
+        }
+      </div>
+      <div class="input-rapper">
+        <label [for]="ipAddress" class="input-label">IP Address:</label>
+        <input
+          (keypress)="validateIPAddressKeyPress($event)"
+          [formControl]="ipAddress"
+          [maxLength]="15"
+          [minLength]="7"
+          id="ipAddress"
+          name="ipAddress"
+          placeholder="Ip Address"
+          type="text"
+        >
+        @if (ipAddress.value.length > 0 && ipAddress.invalid) {
+          <p class="text-red-700">invalid</p>
+        }
+      </div>
+      <div class="input-rapper">
+        <label [for]="port" class="input-label">Port:</label>
+        <input [formControl]="port" [max]="65535" [min]="1" id="port" name="port" placeholder="Port" type="number">
+        @if (port.value !== 0 && port.invalid) {
+          <p class="text-red-700">invalid</p>
+        }
+      </div>
+      @if (userForm.valid) {
+        <p class="text-green-600">valid</p>
+      }
+      <button [disabled]="userForm.invalid" [ngClass]="{'submit-form-valid': userForm.valid}" class="submit-form-button"
+              type="submit">Submit
+      </button>
+    </form>
+  </div>
+</section>
+

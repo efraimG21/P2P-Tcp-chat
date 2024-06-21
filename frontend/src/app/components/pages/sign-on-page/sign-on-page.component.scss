@@ -1,0 +1,38 @@
+
+.sign-on-page {
+  @apply h-full w-full flex justify-center items-center text-amber-50 gap-1;
+  background: #2a3942;
+
+  .sign-on-form {
+    @apply px-10 py-8 rounded-3xl w-96;
+    background: #202c33;
+
+    .user-form {
+      @apply flex flex-col gap-3 items-center;
+      color: black;
+
+      .input-rapper {
+        @apply flex flex-col w-full;
+      }
+
+      .input-label {
+        color: white;
+      }
+
+      input {
+        @apply px-3 py-2 rounded-2xl w-full;
+      }
+
+      .submit-form-button {
+        @apply px-3 py-2 rounded-2xl text-amber-50 bg-green-700 w-1/2;
+      }
+
+      .submit-form-valid {
+        @apply cursor-pointer;
+        &:hover {
+          @apply bg-green-600;
+        }
+      }
+    }
+  }
+}

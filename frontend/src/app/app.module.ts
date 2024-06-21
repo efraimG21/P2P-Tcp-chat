@@ -12,6 +12,7 @@ import { ChatPageComponent } from './components/pages/chat-page/chat-page.compon
 import { SignOnPageComponent } from './components/pages/sign-on-page/sign-on-page.component';
 import { ChatSectionComponent } from './components/pages/chat-page/chat-section/chat-section.component';
 import { UsersListSectionComponent } from './components/pages/chat-page/users-list-section/users-list-section.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -28,7 +29,9 @@ import { UsersListSectionComponent } from './components/pages/chat-page/users-li
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule, // required animations module
-    ToastrModule.forRoot(), // ToastrModule added
+    ToastrModule.forRoot(),
+    ReactiveFormsModule,
+    // ToastrModule added
   ],
   providers: [],
   bootstrap: [AppComponent]
