@@ -9,6 +9,7 @@ import {
   Validators
 } from "@angular/forms";
 import {UserHandlingService} from "../../../services/user/user-handling.service";
+import {UserFormInterface} from "../../../interfaces/user-interface";
 
 @Component({
   selector: 'app-sign-on-page',
@@ -69,12 +70,12 @@ export class SignOnPageComponent {
   onSubmit() {
     console.log(this.ipAddressParser())
     console.log('you have been submit');
-    // const user: UserFormInterface = {
-    //   name: this.userName.value,
-    //   ipAddress: this.ipAddressParser(),
-    //   port: this.port.value,
-    // }
-    // this.userHandlingService.createUser(user);
+    const user: UserFormInterface = {
+      name: this.userName.value,
+      ipAddress: this.ipAddressParser(),
+      port: this.port.value,
+    }
+    this.userHandlingService.createUser(user);
   }
 
   private ipAddressValidator(): ValidatorFn {

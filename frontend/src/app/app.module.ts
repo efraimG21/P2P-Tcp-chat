@@ -13,6 +13,7 @@ import { SignOnPageComponent } from './components/pages/sign-on-page/sign-on-pag
 import { ChatSectionComponent } from './components/pages/chat-page/chat-section/chat-section.component';
 import { UsersListSectionComponent } from './components/pages/chat-page/users-list-section/users-list-section.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   declarations: [
@@ -28,10 +29,10 @@ import {ReactiveFormsModule} from "@angular/forms";
   imports: [
     BrowserModule,
     AppRoutingModule,
+    HttpClientModule,
     BrowserAnimationsModule, // required animations module
     ToastrModule.forRoot(),
     ReactiveFormsModule,
-    // ToastrModule added
   ],
   providers: [],
   bootstrap: [AppComponent]

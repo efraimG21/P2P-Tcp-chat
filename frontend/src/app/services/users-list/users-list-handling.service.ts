@@ -28,6 +28,9 @@ export class UsersListHandlingService {
   }
 
   addUserToList(user: UserInterface) {
+    if (user._id === this.userHandlingService.currentUserUid$.getValue()) {
+      return;
+    }
     const userList = this.userList$.getValue()
     const unknownUserList = this.unknownUserList$.getValue()
     const knownUserList = this.knownUserList$.getValue()
@@ -87,4 +90,14 @@ export class UsersListHandlingService {
     this.knownUserList$.next([user, ...knownUserList])
   }
 
+  moveToTopList(uid: string) {
+    const knownUserList = this.knownUserList$.getValue();
+    const userIndex = knownUserList.findIndex((user) => user._id.toString() === uid);
+    const user = knownUserList[userIndex];
+
+    if (userIndex > 0) {
+      knownUserList.splice(userIndex, 1);
+      this.knownUserList$.next([user, ...knownUserList]);
+    }
+  }
 }

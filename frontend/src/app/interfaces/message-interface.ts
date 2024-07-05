@@ -10,3 +10,4 @@ export enum MessageStatus {
   Received,
   Read,
 }
+

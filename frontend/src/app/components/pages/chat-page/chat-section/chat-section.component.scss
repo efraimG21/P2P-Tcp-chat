@@ -1,0 +1,17 @@
+
+.input-textarea {
+  height: 2.7rem !important;
+  min-height: 2.7rem !important;
+  max-height: 8rem !important;
+  @apply p-2 w-full rounded-xl border border-gray-300 focus:outline-none focus:border-blue-500 resize-none;
+}
+
+.send-icon-button {
+  min-width: 0 !important;
+}
+
+.message-block {
+  max-width: 45%;
+  word-break: break-word;
+  @apply border border-black p-2 rounded-xl font-light text-amber-50 gap-1;
+}

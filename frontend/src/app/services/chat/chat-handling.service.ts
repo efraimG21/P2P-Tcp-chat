@@ -3,19 +3,19 @@ import {BehaviorSubject} from "rxjs";
 import {MessageInterface} from "../../interfaces/message-interface";
 import {ChatRequestingService} from "./chat-requesting.service";
 import {UserHandlingService} from "../user/user-handling.service";
+import {UsersListHandlingService} from "../users-list/users-list-handling.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatHandlingService {
-
   selectedUserUid$ = new BehaviorSubject<string | null>(null);
   selectedChatUid$ = new BehaviorSubject<string | null>(null);
   messages$ = new BehaviorSubject<MessageInterface[]>([]);
 
 
   constructor(
-    private chatRequestingService: ChatRequestingService, private userHandlingService: UserHandlingService) {
+    private chatRequestingService: ChatRequestingService, private userHandlingService: UserHandlingService, private usersListHandlingService: UsersListHandlingService) {
     this.selectedUserUid$.subscribe(selectedUserUid => {
       let currentUserUid = this.userHandlingService.currentUserUid$.getValue()
       if (currentUserUid && selectedUserUid) {
@@ -33,6 +33,7 @@ export class ChatHandlingService {
   }
 
   messageReceived(message: MessageInterface) {
+    this.usersListHandlingService.moveToTopList(message.senderUid)
     if (this.selectedUserUid$.value === message.senderUid)
     {
       this.messages$.next([...this.messages$.value, message])

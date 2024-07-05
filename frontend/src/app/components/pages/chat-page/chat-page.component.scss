@@ -1,0 +1,13 @@
+.chat-page {
+  @apply flex h-full;
+
+  .users-list-section {
+    width: 28rem;
+    @apply h-full;
+  }
+
+  .chat-section {
+    width: calc(100% - 28rem);
+    @apply h-full w-full;
+  }
+}

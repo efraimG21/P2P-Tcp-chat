@@ -7,15 +7,20 @@
     </svg>
   </div>
   <ul>
-    <li [routerLink]="''">
-      log out
-    </li>
-    <li [routerLink]="''">
-      home page
-    </li>
-    <li [routerLink]="'sign-on'">
-      sign on
-    </li>
+    <!--TODO() if im on home page or on sign on to not display -->
+    @if ((userHandlingService.isActive$ | async)) {
+      <li [routerLink]="''" (click)="onLogout()">
+        log out
+      </li>
+    }
+    @else {
+      <li [routerLink]="''">
+        home page
+      </li>
+      <li [routerLink]="'sign-on'">
+        sign on
+      </li>
+    }
   </ul>
   <div>
   </div>
