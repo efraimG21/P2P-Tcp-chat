@@ -7,76 +7,57 @@ import io.ktor.server.config.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import org.litote.kmongo.KMongo
+import org.litote.kmongo.getCollection
+import org.slf4j.LoggerFactory
+import schema.Chat
+import schema.User
+
+private val logger = LoggerFactory.getLogger("Database")
+private lateinit var mongoDatabase: MongoDatabase
 
 fun Application.configureDatabases() {
-    val mongoDatabase = connectToMongoDB()
-    val carService = CarService(mongoDatabase)
-    routing {
-        // Create car
-        post("/cars") {
-            val car = call.receive<Car>()
-            val id = carService.create(car)
-            call.respond(HttpStatusCode.Created, id)
-        }
-        // Read car
-        get("/cars/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalArgumentException("No ID found")
-            carService.read(id)?.let { car ->
-                call.respond(car)
-            } ?: call.respond(HttpStatusCode.NotFound)
-        }
-        // Update car
-        put("/cars/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalArgumentException("No ID found")
-            val car = call.receive<Car>()
-            carService.update(id, car)?.let {
-                call.respond(HttpStatusCode.OK)
-            } ?: call.respond(HttpStatusCode.NotFound)
-        }
-        // Delete car
-        delete("/cars/{id}") {
-            val id = call.parameters["id"] ?: throw IllegalArgumentException("No ID found")
-            carService.delete(id)?.let {
-                call.respond(HttpStatusCode.OK)
-            } ?: call.respond(HttpStatusCode.NotFound)
-        }
+    mongoDatabase = connectToMongoDB()
+}
+
+object Database {
+    val userCollection: MongoCollection<User> by lazy {
+        mongoDatabase.getCollection<User>("User")
+    }
+    val chatCollection: MongoCollection<Chat> by lazy {
+        mongoDatabase.getCollection<Chat>("Chat")
     }
 }
 
-/**
- * Establishes connection with a MongoDB database.
- *
- * The following configuration properties (in application.yaml/application.conf) can be specified:
- * * `db.mongo.user` username for your database
- * * `db.mongo.password` password for the user
- * * `db.mongo.host` host that will be used for the database connection
- * * `db.mongo.port` port that will be used for the database connection
- * * `db.mongo.maxPoolSize` maximum number of connections to a MongoDB server
- * * `db.mongo.database.name` name of the database
- *
- * IMPORTANT NOTE: in order to make MongoDB connection working, you have to start a MongoDB server first.
- * See the instructions here: https://www.mongodb.com/docs/manual/administration/install-community/
- * all the paramaters above
- *
- * @returns [MongoDatabase] instance
- * */
-fun Application.connectToMongoDB(): MongoDatabase {
-    val user = environment.config.tryGetString("db.mongo.user")
-    val password = environment.config.tryGetString("db.mongo.password")
-    val host = environment.config.tryGetString("db.mongo.host") ?: "127.0.0.1"
-    val port = environment.config.tryGetString("db.mongo.port") ?: "27017"
-    val maxPoolSize = environment.config.tryGetString("db.mongo.maxPoolSize")?.toInt() ?: 20
-    val databaseName = environment.config.tryGetString("db.mongo.database.name") ?: "myDatabase"
+private fun Application.connectToMongoDB(): MongoDatabase {
+    val dbConfig = DatabaseConfig(environment.config)
+    val uri = "mongodb://${dbConfig.credentials}${dbConfig.host}:${dbConfig.port}/?maxPoolSize=${dbConfig.maxPoolSize}&w=majority"
 
-    val credentials = user?.let { userVal -> password?.let { passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
-    val uri = "mongodb://$credentials$host:$port/?maxPoolSize=$maxPoolSize&w=majority"
+    return try {
+        val mongoClient = KMongo.createClient(connectionString = uri)
+        val database = mongoClient.getDatabase(dbConfig.databaseName)
+        logger.info("Successfully connected to MongoDB at ${dbConfig.host}:${dbConfig.port}")
 
-    val mongoClient = MongoClients.create(uri)
-    val database = mongoClient.getDatabase(databaseName)
+        environment.monitor.subscribe(ApplicationStopped) {
+            mongoClient.close()
+            logger.info("MongoDB client closed")
+        }
 
-    environment.monitor.subscribe(ApplicationStopped) {
-        mongoClient.close()
+        database
+    } catch (e: Exception) {
+        logger.error("Failed to connect to MongoDB", e)
+        throw e
     }
+}
 
-    return database
+data class DatabaseConfig(val config: ApplicationConfig) {
+    val user: String? = config.tryGetString("db.mongo.user")
+    val password: String? = config.tryGetString("db.mongo.password")
+    val host: String = config.tryGetString("db.mongo.host") ?: "127.0.0.1"
+    val port: String = config.tryGetString("db.mongo.port") ?: "27017"
+    val maxPoolSize: Int = config.tryGetString("db.mongo.maxPoolSize")?.toInt() ?: 20
+    val databaseName: String = config.tryGetString("db.mongo.database.name") ?: "Chats"
+
+    val credentials: String
+        get() = user?.let { userVal -> password?.let { passwordVal -> "$userVal:$passwordVal@" } }.orEmpty()
 }
